@@ -1,0 +1,379 @@
+<div class="solo-container" [@pageEnter]>
+  <!-- Animated Background Elements -->
+  <div class="decorative-background">
+    <div class="strength-particles">
+      <div class="particle" *ngFor="let i of [].constructor(12); let idx = index"
+           [style.animation-delay]="idx * 0.7 + 's'">💪</div>
+    </div>
+    <div class="empowerment-waves">
+      <div class="wave" *ngFor="let i of [].constructor(5); let idx = index"
+           [style.animation-delay]="idx * 1.2 + 's'"
+           [class]="'wave-' + idx"></div>
+    </div>
+    <div class="inspiration-sparks">
+      <div class="spark" *ngFor="let i of [].constructor(20); let idx = index"
+           [style.animation-delay]="idx * 0.3 + 's'"
+           [style.left.%]="(idx * 5) % 100"
+           [style.top.%]="(idx * 3.7) % 100">✨</div>
+    </div>
+  </div>
+
+  <!-- Header Section -->
+  <div class="header-section" [@headerAnimation]>
+    <div class="title-wrapper">
+      <div class="title-decoration">🌟</div>
+      <h1 class="main-title">
+        <span class="title-part">Always</span>
+        <span class="title-part highlight">You</span>
+        <span class="title-part accent">Always Strong</span>
+      </h1>
+      <div class="title-decoration">🌟</div>
+    </div>
+    
+    <div class="subtitle-container">
+      <div class="inspiration-quote">
+        <div class="quote-icon">🌱</div>
+        <blockquote class="main-quote">
+          No matter where you go, know that someone is silently cheering for you.
+        </blockquote>
+        <div class="quote-attribution">- Your Inner Champion</div>
+      </div>
+      
+      <div class="strength-indicators">
+        <span class="indicator" [style.animation-delay]="0.2 + 's'">💎</span>
+        <span class="indicator" [style.animation-delay]="0.4 + 's'">🔥</span>
+        <span class="indicator" [style.animation-delay]="0.6 + 's'">⚡</span>
+        <span class="indicator" [style.animation-delay]="0.8 + 's'">🚀</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Media Gallery Section -->
+  <div class="media-gallery" [@galleryAnimation]>
+    <!-- Featured Media Display -->
+    <div class="featured-display" *ngIf="selectedMedia">
+      <div class="featured-frame" [@featuredAnimation]>
+        <div class="media-container">
+          <!-- Image Display -->
+          <div *ngIf="selectedMedia.type === 'image'" class="image-display">
+            <img
+              [src]="selectedMedia.src"
+              [alt]="selectedMedia.title"
+              class="featured-image"
+              (load)="onMediaLoad()"
+              (error)="onMediaError()"
+            />
+            
+            <!-- Media overlay -->
+            <div class="media-overlay">
+              <div class="overlay-gradient"></div>
+              <div class="media-info">
+                <h3 class="media-title">{{ selectedMedia.title }}</h3>
+                <p class="media-caption">{{ selectedMedia.caption }}</p>
+                <div class="media-tags">
+                  <span class="tag strength-tag">{{ selectedMedia.strengthTag }}</span>
+                  <span class="tag moment-tag">{{ selectedMedia.momentTag }}</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Video Display -->
+          <div *ngIf="selectedMedia.type === 'video'" class="video-display">
+            <video
+              [src]="selectedMedia.src"
+              class="featured-video"
+              controls
+              autoplay
+              [muted]="isVideoMuted"
+              (loadeddata)="onMediaLoad()"
+              (error)="onMediaError()"
+            >
+              Your browser does not support the video tag.
+            </video>
+            
+            <div class="video-controls">
+              <button (click)="toggleVideoMute()" class="control-btn mute-btn">
+                <span>{{ isVideoMuted ? '🔇' : '🔊' }}</span>
+              </button>
+              <button (click)="toggleVideoFullscreen()" class="control-btn fullscreen-btn">
+                <span>⛶</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Navigation arrows -->
+          <button class="nav-arrow prev" (click)="navigateMedia('prev')" [@buttonHover]>
+            <svg viewBox="0 0 24 24" fill="currentColor">
+              <path d="M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z"/>
+            </svg>
+          </button>
+          <button class="nav-arrow next" (click)="navigateMedia('next')" [@buttonHover]>
+            <svg viewBox="0 0 24 24" fill="currentColor">
+              <path d="M8.59 16.59L10 18l6-6-6-6-1.41 1.41L13.17 12z"/>
+            </svg>
+          </button>
+
+          <!-- Close button -->
+          <button class="close-featured" (click)="closeFeatured()" [@buttonHover]>
+            <svg viewBox="0 0 24 24" fill="currentColor">
+              <path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/>
+            </svg>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Media Grid -->
+    <div class="media-grid" [@gridAnimation]>
+      <div
+        *ngFor="let media of mediaItems; let i = index"
+        class="media-card"
+        [class.selected]="selectedMedia.src === media.src"
+        [class.video-card]="media.type === 'video'"
+        (click)="selectMedia(media, i)"
+        [@mediaCardAnimation]
+        [style.animation-delay]="i * 0.15 + 's'"
+      >
+        <div class="card-inner">
+          <!-- Media preview -->
+          <div class="media-preview">
+            <img
+              *ngIf="media.type === 'image'"
+              [src]="media.src"
+              [alt]="media.title"
+              class="preview-image"
+              loading="lazy"
+            />
+            
+            <div *ngIf="media.type === 'video'" class="video-thumbnail">
+              <video
+                [src]="media.src"
+                class="preview-video"
+                muted
+                preload="metadata"
+              ></video>
+              <div class="play-overlay">
+                <div class="play-button">▶</div>
+              </div>
+            </div>
+            
+            <!-- Hover overlay -->
+            <div class="hover-overlay">
+              <div class="overlay-content">
+                <div class="view-icon">{{ media.type === 'video' ? '🎬' : '👁️' }}</div>
+                <span class="view-text">{{ media.type === 'video' ? 'Watch' : 'View' }}</span>
+                <div class="media-number">{{ i + 1 }}</div>
+              </div>
+            </div>
+            
+            <!-- Media type badge -->
+            <div class="media-badge">{{ media.type === 'video' ? '🎥' : '📸' }}</div>
+          </div>
+          
+          <!-- Card content -->
+          <div class="card-content">
+            <h4 class="media-title">{{ media.title }}</h4>
+            <p class="media-description">{{ media.caption }}</p>
+            <div class="strength-meter">
+              <div class="meter-label">Strength Level:</div>
+              <div class="meter-bar">
+                <div class="meter-fill" [style.width.%]="media.strengthLevel"></div>
+              </div>
+              <div class="meter-value">{{ media.strengthLevel }}%</div>
+            </div>
+          </div>
+          
+          <!-- Card glow effect -->
+          <div class="card-glow"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Quick Play Video Button -->
+    <div class="quick-play-section" [@controlsAnimation]>
+      <button 
+        (click)="playFeaturedVideo()" 
+        class="quick-play-btn"
+        [class.playing]="isVideoPlaying"
+        [@buttonHover]
+      >
+        <div class="btn-content">
+          <span class="btn-icon">🎬</span>
+          <span class="btn-text">{{ isVideoPlaying ? 'Video Playing' : 'Play Featured Video' }}</span>
+        </div>
+        <div class="play-pulse" *ngIf="!isVideoPlaying"></div>
+      </button>
+    </div>
+
+    <!-- Media Controls -->
+    <div class="media-controls" [@controlsAnimation]>
+      <div class="control-buttons">
+        <button 
+          (click)="startSlideshow()" 
+          class="control-btn slideshow-btn"
+          [class.active]="isSlideshowActive"
+          [@buttonHover]
+        >
+          <div class="btn-content">
+            <span class="btn-icon">{{ isSlideshowActive ? '⏸️' : '▶️' }}</span>
+            <span class="btn-text">{{ isSlideshowActive ? 'Pause' : 'Start' }} Journey</span>
+          </div>
+        </button>
+
+        <button 
+          (click)="shuffleMedia()" 
+          class="control-btn shuffle-btn"
+          [@buttonHover]
+        >
+          <div class="btn-content">
+            <span class="btn-icon">🔀</span>
+            <span class="btn-text">Mix It Up</span>
+          </div>
+        </button>
+
+        <button 
+          (click)="downloadMedia()" 
+          class="control-btn download-btn"
+          *ngIf="selectedMedia"
+          [@buttonHover]
+        >
+          <div class="btn-content">
+            <span class="btn-icon">📥</span>
+            <span class="btn-text">Save Memory</span>
+          </div>
+        </button>
+      </div>
+
+      <!-- View modes -->
+      <div class="view-modes">
+        <label class="mode-label">Vibe:</label>
+        <div class="mode-buttons">
+          <button 
+            *ngFor="let mode of viewModes" 
+            (click)="setViewMode(mode.value)"
+            class="mode-btn"
+            [class.active]="currentViewMode === mode.value"
+          >
+            <span class="mode-emoji">{{ mode.emoji }}</span>
+            <span class="mode-text">{{ mode.label }}</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Empowerment Stats -->
+  <div class="empowerment-stats" [@statsAnimation]>
+    <div class="stat-card solo-stat">
+      <div class="stat-icon">📸</div>
+      <div class="stat-number">{{ mediaItems.length }}</div>
+      <div class="stat-label">Solo Moments</div>
+    </div>
+    
+    <div class="stat-card solo-stat">
+      <div class="stat-icon">💪</div>
+      <div class="stat-number">{{ getAverageStrength() }}%</div>
+      <div class="stat-label">Inner Strength</div>
+    </div>
+    
+    <div class="stat-card solo-stat">
+      <div class="stat-icon">🌟</div>
+      <div class="stat-number">∞</div>
+      <div class="stat-label">Potential</div>
+    </div>
+    
+    <div class="stat-card solo-stat">
+      <div class="stat-icon">🚀</div>
+      <div class="stat-number">1</div>
+      <div class="stat-label">Unstoppable You</div>
+    </div>
+  </div>
+
+  <!-- Motivational Messages -->
+  <div class="motivation-section" [@motivationAnimation]>
+    <h3 class="motivation-title">
+      <span class="title-icon">💭</span>
+      Words of Strength
+    </h3>
+    
+    <div class="motivation-carousel">
+      <div 
+        *ngFor="let message of motivationalMessages; let i = index" 
+        class="motivation-card"
+        [class.active]="i === currentMotivationIndex"
+        [style.animation-delay]="i * 0.2 + 's'"
+        [@motivationCardAnimation]
+      >
+        <div class="message-content">
+          <div class="message-quote">"{{ message.text }}"</div>
+          <div class="message-author">- {{ message.author }}</div>
+          <div class="message-emoji">{{ message.emoji }}</div>
+        </div>
+        <div class="message-glow"></div>
+      </div>
+    </div>
+    
+    <div class="carousel-controls">
+      <button (click)="prevMotivation()" class="carousel-btn prev-btn">
+        <svg viewBox="0 0 24 24" fill="currentColor">
+          <path d="M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z"/>
+        </svg>
+      </button>
+      <div class="carousel-indicators">
+        <div 
+          *ngFor="let message of motivationalMessages; let i = index"
+          class="indicator-dot"
+          [class.active]="i === currentMotivationIndex"
+          (click)="goToMotivation(i)"
+        ></div>
+      </div>
+      <button (click)="nextMotivation()" class="carousel-btn next-btn">
+        <svg viewBox="0 0 24 24" fill="currentColor">
+          <path d="M8.59 16.59L10 18l6-6-6-6-1.41 1.41L13.17 12z"/>
+        </svg>
+      </button>
+    </div>
+  </div>
+
+  <!-- Personal Growth Timeline -->
+  <div class="growth-timeline" [@timelineAnimation]>
+    <h3 class="timeline-title">
+      <span class="timeline-icon">📈</span>
+      Your Growth Journey
+    </h3>
+    
+    <div class="timeline-track">
+      <div 
+        *ngFor="let milestone of growthMilestones; let i = index" 
+        class="growth-milestone"
+        [style.animation-delay]="i * 0.3 + 's'"
+        [@milestoneAnimation]
+      >
+        <div class="milestone-marker">
+          <div class="marker-dot"></div>
+          <div class="marker-glow"></div>
+        </div>
+        <div class="milestone-content">
+          <div class="milestone-stage">{{ milestone.stage }}</div>
+          <h4 class="milestone-title">{{ milestone.title }}</h4>
+          <p class="milestone-description">{{ milestone.description }}</p>
+          <div class="milestone-achievement">{{ milestone.achievement }}</div>
+        </div>
+        <div class="milestone-icon">{{ milestone.icon }}</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Back Navigation -->
+  <div class="back-navigation" [@backNavAnimation]>
+    <button (click)="goBack()" class="back-btn">
+      <div class="back-icon">
+        <svg viewBox="0 0 24 24" fill="currentColor">
+          <path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/>
+        </svg>
+      </div>
+      <span>Back to Memory Lane</span>
+    </button>
+  </div>
+</div>

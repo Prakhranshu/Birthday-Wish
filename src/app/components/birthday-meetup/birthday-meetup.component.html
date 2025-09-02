@@ -1,0 +1,235 @@
+<div class="birthday-container" [@pageEnter]>
+  <!-- Background decorative elements -->
+  <div class="decorative-background">
+    <div class="floating-balloons">
+      <div class="balloon" *ngFor="let i of [].constructor(6); let idx = index"
+           [style.animation-delay]="idx * 1.2 + 's'">🎈</div>
+    </div>
+    <div class="celebration-particles">
+      <div class="particle" *ngFor="let i of [].constructor(12); let idx = index"
+           [style.animation-delay]="idx * 0.5 + 's'">🎉</div>
+    </div>
+    <div class="confetti-layer">
+      <div class="confetti" *ngFor="let i of [].constructor(20); let idx = index"
+           [style.animation-delay]="idx * 0.3 + 's'"
+           [style.left.%]="(idx * 5) % 100"
+           [class]="'confetti-color-' + (idx % 4)"></div>
+    </div>
+  </div>
+
+  <!-- Header Section -->
+  <div class="header-section" [@headerAnimation]>
+    <div class="title-wrapper">
+      <div class="title-decoration">🎂</div>
+      <h1 class="main-title">
+        <span class="title-part">Birthday</span>
+        <span class="title-part highlight">Meetup</span>
+        <span class="title-year">2023</span>
+      </h1>
+      <div class="title-decoration">🎂</div>
+    </div>
+    
+    <div class="subtitle-container">
+      <div class="quote-icon">🎁</div>
+      <p class="subtitle">{{ message }}</p>
+      <div class="celebration-trail">
+        <span class="trail-emoji" [style.animation-delay]="0.2 + 's'">🥳</span>
+        <span class="trail-emoji" [style.animation-delay]="0.4 + 's'">🎊</span>
+        <span class="trail-emoji" [style.animation-delay]="0.6 + 's'">✨</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Interactive Gallery Section -->
+  <div class="gallery-section" [@galleryAnimation]>
+    <!-- Featured Image Display -->
+    <div class="featured-image-container" *ngIf="selectedPhoto">
+      <div class="featured-frame" [@featuredImageAnimation]>
+        <div class="image-wrapper">
+          <img
+            [src]="selectedPhoto"
+            [alt]="'Birthday celebration moment'"
+            class="featured-image"
+            (load)="onImageLoad()"
+            (error)="onImageError()"
+          />
+          
+          <!-- Image overlay -->
+          <div class="image-overlay"></div>
+          
+          <!-- Image caption -->
+          <div class="image-caption">
+            <div class="caption-content">
+              <h3>{{ getFeaturedCaption() }}</h3>
+              <p>{{ getFeaturedDescription() }}</p>
+            </div>
+          </div>
+          
+          <!-- Close button -->
+          <button class="close-btn" (click)="closeFeaturedView()" [@buttonHover]>
+            <svg viewBox="0 0 24 24" fill="currentColor">
+              <path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/>
+            </svg>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Photo Grid -->
+    <div class="photo-grid" [@gridAnimation]>
+      <div
+        *ngFor="let photo of photos; let i = index"
+        class="photo-card"
+        [class.featured]="selectedPhoto === photo"
+        (click)="selectPhoto(photo, i)"
+        [@photoHover]
+      >
+        <div class="card-wrapper">
+          <div class="image-container">
+            <img
+              [src]="photo"
+              [alt]="'Birthday moment ' + (i + 1)"
+              class="photo-image"
+              loading="lazy"
+            />
+            
+            <!-- Hover overlay -->
+            <div class="hover-overlay">
+              <div class="overlay-content">
+                <div class="view-icon">👁️</div>
+                <span class="view-text">View</span>
+              </div>
+              <div class="photo-number">{{ i + 1 }}</div>
+            </div>
+          </div>
+          
+          <!-- Card info -->
+          <div class="card-info">
+            <h4 class="photo-title">{{ getPhotoTitle(i) }}</h4>
+            <p class="photo-description">{{ getPhotoDescription(i) }}</p>
+          </div>
+        </div>
+        
+        <!-- Card glow effect -->
+        <div class="card-glow"></div>
+      </div>
+    </div>
+
+    <!-- Interactive Controls -->
+    <div class="gallery-controls" [@controlsAnimation]>
+      <div class="control-group">
+        <button 
+          (click)="shufflePhotos()" 
+          class="control-btn shuffle-btn"
+          [@buttonHover]
+        >
+          <div class="btn-content">
+            <span class="btn-icon">🔀</span>
+            <span class="btn-text">Shuffle</span>
+          </div>
+        </button>
+
+        <button 
+          (click)="startSlideshow()" 
+          class="control-btn slideshow-btn"
+          [class.active]="isSlideshowActive"
+          [@buttonHover]
+        >
+          <div class="btn-content">
+            <span class="btn-icon">{{ isSlideshowActive ? '⏸️' : '▶️' }}</span>
+            <span class="btn-text">{{ isSlideshowActive ? 'Pause' : 'Slideshow' }}</span>
+          </div>
+        </button>
+
+        <button 
+          (click)="resetGallery()" 
+          class="control-btn reset-btn"
+          [@buttonHover]
+        >
+          <div class="btn-content">
+            <span class="btn-icon">🔄</span>
+            <span class="btn-text">Reset</span>
+          </div>
+        </button>
+      </div>
+
+      <!-- View mode toggle -->
+      <div class="view-toggle">
+        <label>View:</label>
+        <button 
+          *ngFor="let mode of viewModes" 
+          (click)="setViewMode(mode.value)"
+          class="mode-btn"
+          [class.active]="currentViewMode === mode.value"
+        >
+          {{ mode.label }}
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Memory Stats -->
+  <div class="memory-stats" [@statsAnimation]>
+    <div class="stat-card birthday-stat">
+      <div class="stat-icon">📸</div>
+      <div class="stat-number">{{ photos.length }}</div>
+      <div class="stat-label">Special Moments</div>
+    </div>
+    
+    <div class="stat-card birthday-stat">
+      <div class="stat-icon">🎉</div>
+      <div class="stat-number">1</div>
+      <div class="stat-label">Amazing Birthday</div>
+    </div>
+    
+    <div class="stat-card birthday-stat">
+      <div class="stat-icon">🥳</div>
+      <div class="stat-number">∞</div>
+      <div class="stat-label">Fun Memories</div>
+    </div>
+    
+    <div class="stat-card birthday-stat">
+      <div class="stat-icon">✨</div>
+      <div class="stat-number">2023</div>
+      <div class="stat-label">Year to Remember</div>
+    </div>
+  </div>
+
+  <!-- Birthday Timeline -->
+  <div class="timeline-section" [@timelineAnimation]>
+    <h3 class="timeline-title">
+      <span class="timeline-icon">⏰</span>
+      Celebration Timeline
+    </h3>
+    <div class="timeline-container">
+      <div 
+        *ngFor="let moment of timelineMoments; let i = index" 
+        class="timeline-item"
+        [style.animation-delay]="i * 0.2 + 's'"
+        [@timelineItemAnimation]
+      >
+        <div class="timeline-marker">
+          <div class="marker-dot"></div>
+          <div class="marker-time">{{ moment.time }}</div>
+        </div>
+        <div class="timeline-content">
+          <h4>{{ moment.title }}</h4>
+          <p>{{ moment.description }}</p>
+          <div class="moment-emoji">{{ moment.emoji }}</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Back Navigation -->
+  <div class="back-navigation" [@backNavAnimation]>
+    <button (click)="goBack()" class="back-btn">
+      <div class="back-icon">
+        <svg viewBox="0 0 24 24" fill="currentColor">
+          <path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/>
+        </svg>
+      </div>
+      <span>Back to Memory Lane</span>
+    </button>
+  </div>
+</div>

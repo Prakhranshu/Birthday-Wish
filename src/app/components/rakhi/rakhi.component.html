@@ -1,0 +1,210 @@
+<div class="rakhi-container" [@pageEnter]>
+  <!-- Background decorative elements -->
+  <div class="decorative-background">
+    <div class="floating-rakhis">
+      <div class="rakhi-symbol" *ngFor="let i of [].constructor(8); let idx = index"
+           [style.animation-delay]="idx * 0.8 + 's'">🎀</div>
+    </div>
+    <div class="love-particles">
+      <div class="particle" *ngFor="let i of [].constructor(15); let idx = index"
+           [style.animation-delay]="idx * 0.4 + 's'">💕</div>
+    </div>
+  </div>
+
+  <!-- Header Section -->
+  <div class="header-section" [@headerAnimation]>
+    <div class="title-wrapper">
+      <div class="title-decoration">🌟</div>
+      <h1 class="main-title">
+        <span class="title-part">Rakhi</span>
+        <span class="title-part highlight">Moments</span>
+      </h1>
+      <div class="title-decoration">🌟</div>
+    </div>
+    
+    <div class="subtitle-container">
+      <div class="quote-icon">💝</div>
+      <p class="subtitle">Not by blood, but by heart – Thank you for calling me your brother.</p>
+      <div class="heart-trail">
+        <span class="trail-heart" [style.animation-delay]="0.2 + 's'">💖</span>
+        <span class="trail-heart" [style.animation-delay]="0.4 + 's'">💕</span>
+        <span class="trail-heart" [style.animation-delay]="0.6 + 's'">💗</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Image Gallery Section -->
+  <div class="gallery-section" [@galleryAnimation]>
+    <!-- Main Image Display -->
+    <div class="main-image-container">
+      <div class="image-frame">
+        <!-- Image with proper aspect ratio control -->
+        <div class="image-wrapper">
+          <img
+            [@imageTransition]
+            [src]="images[currentIndex]"
+            [alt]="'Rakhi moment ' + (currentIndex + 1)"
+            class="main-image"
+            (load)="onImageLoad()"
+            (error)="onImageError()"
+            [style.object-position]="getImagePosition(currentIndex)"
+          />
+          
+          <!-- Image overlay for better text contrast -->
+          <div class="image-overlay"></div>
+          
+          <!-- Image caption -->
+          <div class="image-caption">
+            <div class="caption-content">
+              <h3>{{ getImageCaption(currentIndex) }}</h3>
+              <p>{{ getImageDescription(currentIndex) }}</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Navigation controls -->
+        <div class="nav-controls">
+          <button
+            (click)="prevImage()"
+            class="nav-btn prev-btn"
+            [disabled]="isTransitioning"
+            aria-label="Previous Image"
+            [@buttonHover]
+          >
+            <div class="btn-icon">
+              <svg viewBox="0 0 24 24" fill="currentColor">
+                <path d="M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z"/>
+              </svg>
+            </div>
+            <div class="btn-glow"></div>
+          </button>
+
+          <button
+            (click)="nextImage()"
+            class="nav-btn next-btn"
+            [disabled]="isTransitioning"
+            aria-label="Next Image"
+            [@buttonHover]
+          >
+            <div class="btn-icon">
+              <svg viewBox="0 0 24 24" fill="currentColor">
+                <path d="M8.59 16.59L10 18l6-6-6-6-1.41 1.41L13.17 12z"/>
+              </svg>
+            </div>
+            <div class="btn-glow"></div>
+          </button>
+        </div>
+
+        <!-- Progress indicator -->
+        <div class="progress-indicator">
+          <div class="progress-bar">
+            <div class="progress-fill" [style.width.%]="getProgressPercentage()"></div>
+          </div>
+          <span class="progress-text">{{ currentIndex + 1 }} / {{ images.length }}</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Thumbnail Strip -->
+    <div class="thumbnail-strip" [@thumbnailAnimation]>
+      <div class="thumbnail-track" #thumbnailTrack>
+        <div
+          *ngFor="let image of images; let i = index"
+          class="thumbnail-item"
+          [class.active]="i === currentIndex"
+          (click)="goToImage(i)"
+          [@thumbnailHover]
+        >
+          <div class="thumbnail-wrapper">
+            <img
+              [src]="image"
+              [alt]="'Thumbnail ' + (i + 1)"
+              class="thumbnail-image"
+              loading="lazy"
+            />
+            <div class="thumbnail-overlay">
+              <div class="play-icon" *ngIf="i === currentIndex">▶</div>
+            </div>
+          </div>
+          <div class="thumbnail-number">{{ i + 1 }}</div>
+        </div>
+      </div>
+      
+      <!-- Thumbnail navigation -->
+      <button class="thumb-nav-btn left" (click)="scrollThumbnails('left')" 
+              [disabled]="!canScrollLeft">
+        <svg viewBox="0 0 24 24" fill="currentColor">
+          <path d="M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z"/>
+        </svg>
+      </button>
+      <button class="thumb-nav-btn right" (click)="scrollThumbnails('right')" 
+              [disabled]="!canScrollRight">
+        <svg viewBox="0 0 24 24" fill="currentColor">
+          <path d="M8.59 16.59L10 18l6-6-6-6-1.41 1.41L13.17 12z"/>
+        </svg>
+      </button>
+    </div>
+
+    <!-- Auto-play controls -->
+    <div class="playback-controls" [@controlsAnimation]>
+      <button 
+        (click)="toggleAutoplay()" 
+        class="autoplay-btn"
+        [class.active]="isAutoPlaying"
+      >
+        <div class="btn-content">
+          <span class="btn-icon">{{ isAutoPlaying ? '⏸️' : '▶️' }}</span>
+          <span class="btn-text">{{ isAutoPlaying ? 'Pause' : 'Play' }} Slideshow</span>
+        </div>
+        <div class="autoplay-progress" *ngIf="isAutoPlaying">
+          <div class="progress-circle" [style.animation-duration]="autoplayInterval + 'ms'"></div>
+        </div>
+      </button>
+
+      <div class="speed-controls">
+        <label>Speed:</label>
+        <button 
+          *ngFor="let speed of playbackSpeeds" 
+          (click)="setPlaybackSpeed(speed.value)"
+          class="speed-btn"
+          [class.active]="autoplayInterval === speed.value"
+        >
+          {{ speed.label }}
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Memory Stats -->
+  <div class="memory-stats" [@statsAnimation]>
+    <div class="stat-card">
+      <div class="stat-icon">📸</div>
+      <div class="stat-number">{{ images.length }}</div>
+      <div class="stat-label">Precious Moments</div>
+    </div>
+    
+    <div class="stat-card">
+      <div class="stat-icon">💕</div>
+      <div class="stat-number">∞</div>
+      <div class="stat-label">Love Shared</div>
+    </div>
+    
+    <div class="stat-card">
+      <div class="stat-icon">🎀</div>
+      <div class="stat-number">1</div>
+      <div class="stat-label">Unbreakable Bond</div>
+    </div>
+  </div>
+
+  <!-- Back Navigation -->
+  <div class="back-navigation" [@backNavAnimation]>
+    <button (click)="goBack()" class="back-btn">
+      <div class="back-icon">
+        <svg viewBox="0 0 24 24" fill="currentColor">
+          <path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/>
+        </svg>
+      </div>
+      <span>Back to Memory Lane</span>
+    </button>
+  </div>
+</div>

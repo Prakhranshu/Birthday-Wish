@@ -1,0 +1,332 @@
+<div class="farewell-container" [@pageEnter]>
+  <!-- Animated Background Elements -->
+  <div class="decorative-background">
+    <div class="floating-memories">
+      <div class="memory-particle" *ngFor="let i of [].constructor(10); let idx = index"
+           [style.animation-delay]="idx * 0.6 + 's'">💭</div>
+    </div>
+    <div class="journey-paths">
+      <div class="path-line" *ngFor="let i of [].constructor(6); let idx = index"
+           [style.animation-delay]="idx * 0.8 + 's'"
+           [class]="'path-' + (idx % 3)"></div>
+    </div>
+    <div class="hope-stars">
+      <div class="star" *ngFor="let i of [].constructor(15); let idx = index"
+           [style.animation-delay]="idx * 0.4 + 's'"
+           [style.left.%]="(idx * 6.67) % 100"
+           [style.top.%]="(idx * 4.33) % 100">⭐</div>
+    </div>
+  </div>
+
+  <!-- Header Section -->
+  <div class="header-section" [@headerAnimation]>
+    <div class="title-wrapper">
+      <div class="title-decoration">🌅</div>
+      <h1 class="main-title">
+        <span class="title-part">Farewell</span>
+        <span class="title-part highlight">Moments</span>
+      </h1>
+      <div class="title-decoration">🌈</div>
+    </div>
+    
+    <div class="subtitle-container">
+      <div class="quote-wrapper">
+        <div class="quote-icon">💫</div>
+        <blockquote class="main-quote">
+          {{ message }}
+        </blockquote>
+        <div class="quote-author">- A Chapter Closes, Another Opens</div>
+      </div>
+      
+      <div class="emotion-trail">
+        <span class="emotion-emoji" [style.animation-delay]="0.2 + 's'">😢</span>
+        <span class="emotion-emoji" [style.animation-delay]="0.4 + 's'">💝</span>
+        <span class="emotion-emoji" [style.animation-delay]="0.6 + 's'">✨</span>
+        <span class="emotion-emoji" [style.animation-delay]="0.8 + 's'">🌟</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Interactive Memory Gallery -->
+  <div class="memory-gallery" [@galleryAnimation]>
+    <!-- Memory Showcase -->
+    <div class="showcase-section" *ngIf="selectedMemory">
+      <div class="showcase-frame" [@showcaseAnimation]>
+        <div class="memory-display">
+          <img
+            [src]="selectedMemory.photo"
+            [alt]="selectedMemory.caption"
+            class="showcase-image"
+            (load)="onImageLoad()"
+            (error)="onImageError()"
+          />
+          
+          <!-- Memory overlay -->
+          <div class="memory-overlay">
+            <div class="overlay-gradient"></div>
+            <div class="memory-details">
+              <h3 class="memory-title">{{ selectedMemory.title }}</h3>
+              <p class="memory-caption">{{ selectedMemory.caption }}</p>
+              <div class="memory-meta">
+                <span class="memory-emotion">{{ selectedMemory.emotion }}</span>
+                <span class="memory-theme">{{ selectedMemory.theme }}</span>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Navigation arrows -->
+          <button class="nav-arrow prev" (click)="navigateMemory('prev')" [@buttonHover]>
+            <svg viewBox="0 0 24 24" fill="currentColor">
+              <path d="M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z"/>
+            </svg>
+          </button>
+          <button class="nav-arrow next" (click)="navigateMemory('next')" [@buttonHover]>
+            <svg viewBox="0 0 24 24" fill="currentColor">
+              <path d="M8.59 16.59L10 18l6-6-6-6-1.41 1.41L13.17 12z"/>
+            </svg>
+          </button>
+          
+          <!-- Close button -->
+          <button class="close-showcase" (click)="closeShowcase()" [@buttonHover]>
+            <svg viewBox="0 0 24 24" fill="currentColor">
+              <path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/>
+            </svg>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Memory Cards Grid -->
+    <div class="memory-grid" [@gridAnimation]>
+      <div
+        *ngFor="let memory of memories; let i = index"
+        class="memory-card"
+        [class.selected]="selectedMemory?.photo === memory.photo"
+        (click)="selectMemory(memory, i)"
+        [@memoryCardAnimation]
+        [style.animation-delay]="i * 0.1 + 's'"
+      >
+        <div class="card-inner">
+          <!-- Photo container -->
+          <div class="photo-container">
+            <img
+              [src]="memory.photo"
+              [alt]="memory.caption"
+              class="memory-photo"
+              loading="lazy"
+            />
+            
+            <!-- Hover overlay -->
+            <div class="hover-overlay">
+              <div class="overlay-content">
+                <div class="view-icon">👁️</div>
+                <span class="view-text">View Memory</span>
+                <div class="memory-number">{{ i + 1 }}</div>
+              </div>
+            </div>
+            
+            <!-- Emotion badge -->
+            <div class="emotion-badge">{{ memory.emotion }}</div>
+          </div>
+          
+          <!-- Card content -->
+          <div class="card-content">
+            <h4 class="memory-title">{{ memory.title }}</h4>
+            <p class="memory-description">{{ memory.caption }}</p>
+            <div class="memory-tags">
+              <span class="tag theme-tag">{{ memory.theme }}</span>
+              <span class="tag feeling-tag">{{ memory.feeling }}</span>
+            </div>
+          </div>
+          
+          <!-- Card glow effect -->
+          <div class="card-glow"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Memory Controls -->
+    <div class="memory-controls" [@controlsAnimation]>
+      <div class="control-buttons">
+        <button 
+          (click)="startMemorySlideshow()" 
+          class="control-btn slideshow-btn"
+          [class.active]="isSlideshowActive"
+          [@buttonHover]
+        >
+          <div class="btn-content">
+            <span class="btn-icon">{{ isSlideshowActive ? '⏸️' : '▶️' }}</span>
+            <span class="btn-text">{{ isSlideshowActive ? 'Pause' : 'Relive' }} Memories</span>
+          </div>
+        </button>
+
+        <button 
+          (click)="shuffleMemories()" 
+          class="control-btn shuffle-btn"
+          [@buttonHover]
+        >
+          <div class="btn-content">
+            <span class="btn-icon">🔄</span>
+            <span class="btn-text">Shuffle</span>
+          </div>
+        </button>
+
+        <button 
+          (click)="addReflection()" 
+          class="control-btn reflection-btn"
+          [@buttonHover]
+        >
+          <div class="btn-content">
+            <span class="btn-icon">✍️</span>
+            <span class="btn-text">Add Reflection</span>
+          </div>
+        </button>
+      </div>
+
+      <!-- Filter options -->
+      <div class="filter-section">
+        <label class="filter-label">Filter by feeling:</label>
+        <div class="filter-buttons">
+          <button 
+            *ngFor="let filter of emotionFilters" 
+            (click)="filterByEmotion(filter.value)"
+            class="filter-btn"
+            [class.active]="currentFilter === filter.value"
+          >
+            <span class="filter-emoji">{{ filter.emoji }}</span>
+            <span class="filter-text">{{ filter.label }}</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Reflection & Messages Section -->
+  <div class="reflection-section" [@reflectionAnimation]>
+    <h3 class="reflection-title">
+      <span class="title-icon">💭</span>
+      Reflections & Well Wishes
+    </h3>
+    
+    <div class="reflections-container">
+      <div 
+        *ngFor="let reflection of reflections; let i = index" 
+        class="reflection-card"
+        [style.animation-delay]="i * 0.15 + 's'"
+        [@reflectionItemAnimation]
+      >
+        <div class="reflection-content">
+          <div class="reflection-quote">"{{ reflection.message }}"</div>
+          <div class="reflection-author">- {{ reflection.author }}</div>
+          <div class="reflection-emotion">{{ reflection.emotion }}</div>
+        </div>
+        <div class="reflection-ornament">{{ reflection.ornament }}</div>
+      </div>
+    </div>
+
+    <!-- Add reflection form -->
+    <div class="add-reflection-form" *ngIf="showReflectionForm" [@formSlideIn]>
+      <div class="form-container">
+        <h4>Share Your Thoughts</h4>
+        <textarea 
+          [(ngModel)]="newReflection.message"
+          placeholder="Write your reflection or farewell message..."
+          class="reflection-textarea"
+          rows="4"
+        ></textarea>
+        <div class="form-row">
+          <input 
+            [(ngModel)]="newReflection.author"
+            placeholder="Your name"
+            class="author-input"
+          />
+          <select 
+            [(ngModel)]="newReflection.emotion"
+            class="emotion-select"
+          >
+            <option value="">Select emotion</option>
+            <option value="😢">Sad</option>
+            <option value="💝">Grateful</option>
+            <option value="🌟">Hopeful</option>
+            <option value="💪">Supportive</option>
+          </select>
+        </div>
+        <div class="form-buttons">
+          <button (click)="submitReflection()" class="submit-btn">Share</button>
+          <button (click)="cancelReflection()" class="cancel-btn">Cancel</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Journey Timeline -->
+  <div class="journey-timeline" [@timelineAnimation]>
+    <h3 class="timeline-title">
+      <span class="timeline-icon">🛤️</span>
+      Our Journey Together
+    </h3>
+    
+    <div class="timeline-track">
+      <div 
+        *ngFor="let milestone of journeyMilestones; let i = index" 
+        class="milestone-item"
+        [class.past]="milestone.type === 'past'"
+        [class.present]="milestone.type === 'present'"
+        [class.future]="milestone.type === 'future'"
+        [style.animation-delay]="i * 0.2 + 's'"
+        [@milestoneAnimation]
+      >
+        <div class="milestone-marker">
+          <div class="marker-dot"></div>
+          <div class="marker-line"></div>
+        </div>
+        <div class="milestone-content">
+          <div class="milestone-date">{{ milestone.date }}</div>
+          <h4 class="milestone-title">{{ milestone.title }}</h4>
+          <p class="milestone-description">{{ milestone.description }}</p>
+          <div class="milestone-sentiment">{{ milestone.sentiment }}</div>
+        </div>
+        <div class="milestone-icon">{{ milestone.icon }}</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Farewell Stats -->
+  <div class="farewell-stats" [@statsAnimation]>
+    <div class="stat-card farewell-stat">
+      <div class="stat-icon">📸</div>
+      <div class="stat-number">{{ memories.length }}</div>
+      <div class="stat-label">Precious Memories</div>
+    </div>
+    
+    <div class="stat-card farewell-stat">
+      <div class="stat-icon">💝</div>
+      <div class="stat-number">∞</div>
+      <div class="stat-label">Cherished Moments</div>
+    </div>
+    
+    <div class="stat-card farewell-stat">
+      <div class="stat-icon">🌈</div>
+      <div class="stat-number">1</div>
+      <div class="stat-label">New Beginning</div>
+    </div>
+    
+    <div class="stat-card farewell-stat">
+      <div class="stat-icon">💫</div>
+      <div class="stat-number">{{ reflections.length }}</div>
+      <div class="stat-label">Well Wishes</div>
+    </div>
+  </div>
+
+  <!-- Back Navigation -->
+  <div class="back-navigation" [@backNavAnimation]>
+    <button (click)="goBack()" class="back-btn">
+      <div class="back-icon">
+        <svg viewBox="0 0 24 24" fill="currentColor">
+          <path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/>
+        </svg>
+      </div>
+      <span>Back to Memory Lane</span>
+    </button>
+  </div>
+</div>

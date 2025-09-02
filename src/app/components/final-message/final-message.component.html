@@ -1,0 +1,15 @@
+<div class="max-w-3xl mx-auto p-6 text-center">
+  <button
+    *ngIf="!showMessage"
+    (click)="revealMessage()"
+    class="px-6 py-3 bg-pink-500 text-white rounded hover:bg-pink-600 focus:outline-none"
+  >
+    Click to Reveal
+  </button>
+
+  <div *ngIf="showMessage" class="mt-6 p-4 bg-pink-100 rounded shadow text-pink-800 text-lg whitespace-pre-line">
+    Lavanya, you're one of the most comforting people I've known.
+    Distance never matters when hearts stay close.
+    Happy Birthday, my sister from another soul.
+  </div>
+</div>

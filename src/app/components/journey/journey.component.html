@@ -1,0 +1,99 @@
+<div class="memory-journey-container" [@listAnimation]>
+  <!-- Floating particles background -->
+  <div class="floating-particles">
+    <div class="particle" *ngFor="let i of [].constructor(20); let idx = index" 
+         [style.animation-delay]="idx * 0.3 + 's'"></div>
+  </div>
+  
+  <!-- Header Section -->
+  <div class="hero-section">
+    <div class="title-container">
+      <h1 class="main-title">
+        <span class="title-word" [style.animation-delay]="0.2 + 's'">A</span>
+        <span class="title-word" [style.animation-delay]="0.4 + 's'">Walk</span>
+        <span class="title-word" [style.animation-delay]="0.6 + 's'">Down</span>
+        <span class="title-word gradient-text" [style.animation-delay]="0.8 + 's'">Memory</span>
+        <span class="title-word gradient-text" [style.animation-delay]="1.0 + 's'">Lane</span>
+      </h1>
+      <p class="subtitle">Our beautiful journey through cherished moments</p>
+    </div>
+    
+    <!-- Music Control -->
+    <div class="music-control">
+      <button (click)="toggleMusic()" class="music-btn" [class.playing]="musicPlaying">
+        <div class="music-icon">
+          <div class="sound-wave" *ngIf="musicPlaying">
+            <span></span><span></span><span></span><span></span>
+          </div>
+          <svg *ngIf="!musicPlaying" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M12 3v10.55c-.59-.34-1.27-.55-2-.55-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4V7h4V3h-6z"/>
+          </svg>
+        </div>
+        <span class="music-text">{{ musicPlaying ? 'Pause Our Song' : 'Play Our Song' }}</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- Memory Cards Section -->
+  <div class="memories-section">
+    <div class="memories-grid">
+      <div *ngFor="let memory of memories; let i = index" 
+           (click)="navigateTo(memory.route)" 
+           class="memory-card"
+           [style.animation-delay]="(i * 0.2) + 's'">
+        
+        <!-- Card Background Pattern -->
+        <div class="card-bg-pattern"></div>
+        
+        <!-- Card Content -->
+        <div class="card-content">
+          <!-- Icon/Emoji based on memory type -->
+          <div class="memory-icon">
+            <span [ngSwitch]="memory.title">
+              <span *ngSwitchCase="'Rakhi Day'">🎀</span>
+              <span *ngSwitchCase="'Your 2023 Birthday Meetup'">🎂</span>
+              <span *ngSwitchCase="'Farewell'">🎓</span>
+              <span *ngSwitchDefault>✨</span>
+            </span>
+          </div>
+          
+          <h3 class="memory-title">{{ memory.title }}</h3>
+          
+          <div class="memory-description">
+            <p>{{ memory.message }}</p>
+          </div>
+          
+          <!-- Decorative elements -->
+          <div class="card-decoration">
+            <div class="sparkle sparkle-1">✨</div>
+            <div class="sparkle sparkle-2">💫</div>
+            <div class="sparkle sparkle-3">⭐</div>
+          </div>
+          
+          <!-- Call to action -->
+          <div class="explore-btn">
+            <span>Explore Memory</span>
+            <svg viewBox="0 0 24 24" fill="currentColor">
+              <path d="M13.025 1l-2.847 2.828 6.176 6.176h-16.354v3.992h16.354l-6.176 6.176 2.847 2.828 10.975-11z"/>
+            </svg>
+          </div>
+        </div>
+
+        <!-- Hover overlay -->
+        <div class="card-overlay">
+          <div class="overlay-content">
+            <div class="heart-animation">💖</div>
+            <p>Click to relive this moment</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Footer Quote -->
+  <div class="footer-quote">
+    <div class="quote-marks">"</div>
+    <p>Every memory with you is a treasure worth keeping forever</p>
+    <div class="quote-marks">"</div>
+  </div>
+</div>
